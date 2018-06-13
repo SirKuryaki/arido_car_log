@@ -1,0 +1,59 @@
+{
+  "project_info": {
+    "project_number": "791415893432",
+    "firebase_url": "https://arido-car-log.firebaseio.com",
+    "project_id": "arido-car-log",
+    "storage_bucket": "arido-car-log.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:791415893432:android:845e97848c890754",
+        "android_client_info": {
+          "package_name": "com.aridocode.aridocarlog"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "791415893432-27tndcr874sdqt4336pqkbf6m9gf4rok.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.aridocode.aridocarlog",
+            "certificate_hash": "421fba4f75b0402f544947ecc2f02ae6e123aeec"
+          }
+        },
+        {
+          "client_id": "791415893432-ue02pehtp5go0j1b7sjfkkluhaujpkcr.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "791415893432-ue02pehtp5go0j1b7sjfkkluhaujpkcr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBw0dXlXkJ9W692_GGm1S1AbF9GsUWHWdc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "791415893432-ue02pehtp5go0j1b7sjfkkluhaujpkcr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

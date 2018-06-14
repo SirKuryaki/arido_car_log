@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'model/Car.dart';
 
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() => runApp(new MyApp());
 
@@ -85,6 +87,17 @@ class _WelcomePageState extends State<WelcomePage> {
     setState(() {
       _status = "Hi ${user.displayName}";
     });
+
+    List<Car> cars = await _getMyCarList(user);
+    if (cars == null) {
+      setState(() {
+        _status = "Error while retrieving info";
+      });
+    } else {
+      setState(() {
+        _status = cars.toString();
+      });
+    }
   }
 
   @override
@@ -122,5 +135,36 @@ class _WelcomePageState extends State<WelcomePage> {
         ),
       ),
     );
+  }
+
+  Future<List<Car>> _getMyCarList(FirebaseUser user) async {
+    DocumentSnapshot doc =
+        await Firestore.instance.collection("users").document(user.uid).get();
+    if (doc == null || !doc.exists) {
+      final DocumentReference ref =
+          Firestore.instance.collection("users").document(user.uid);
+      await ref.setData({"id": user.uid});
+      doc = await ref.get();
+    }
+
+    final cars = await doc.reference.collection("cars").getDocuments();
+    if (cars.documents.isEmpty) {
+      return new List(0);
+    }
+
+    final carsArray = cars.documents;
+
+    List<Car> carList = new List();
+    for (final document in carsArray) {
+      final String id = document.data["id"] as String;
+      final String brand = document.data["brand"] as String;
+      final String model = document.data["model"] as String;
+      final String version = document.data["version"] as String;
+      final int year = document.data["year"] as int;
+
+      carList.add(new Car(id, brand, model, version, year));
+    }
+
+    return carList;
   }
 }

@@ -1,10 +1,14 @@
 class Car {
 
-  final String id;
-  final String brand;
-  final String model;
-  final String version;
-  final int year;
+  String id;
+  String brand;
+  String model;
+  String version;
+  int initialOdometer;
+  int year;
 
-  Car(this.id, this.brand, this.model, this.version, this.year);
+  String fuelType;
+  String measureUnit;
+
+  Car();
 }

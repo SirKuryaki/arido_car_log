@@ -6,6 +6,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'cars/CarPage.dart';
+
 void main() => runApp(new MyApp());
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -21,6 +23,9 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.red,
       ),
       home: new WelcomePage(title: 'Car log'),
+      routes: <String, WidgetBuilder>{
+        CAR_PAGE_ROUTE: (BuildContext context) => CarPage(),
+      },
     );
   }
 }
@@ -95,9 +100,17 @@ class _WelcomePageState extends State<WelcomePage> {
       });
     } else {
       setState(() {
-        _status = cars.toString();
+        if (cars.length == 0) {
+          _status = "No cars added!";
+        } else {
+          _status = cars.toString();
+        }
       });
     }
+  }
+
+  _addCar() {
+    Navigator.of(context).pushNamed(CAR_PAGE_ROUTE);
   }
 
   @override
@@ -134,6 +147,11 @@ class _WelcomePageState extends State<WelcomePage> {
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _addCar,
+        tooltip: 'Increment',
+        child: Icon(Icons.add),
+      ),
     );
   }
 
@@ -156,13 +174,13 @@ class _WelcomePageState extends State<WelcomePage> {
 
     List<Car> carList = new List();
     for (final document in carsArray) {
-      final String id = document.data["id"] as String;
-      final String brand = document.data["brand"] as String;
-      final String model = document.data["model"] as String;
-      final String version = document.data["version"] as String;
-      final int year = document.data["year"] as int;
-
-      carList.add(new Car(id, brand, model, version, year));
+      Car car = Car();
+      car.id = document.data["id"] as String;
+      car.brand = document.data["brand"] as String;
+      car.model = document.data["model"] as String;
+      car.version = document.data["version"] as String;
+      car.year = document.data["year"] as int;
+      carList.add(car);
     }
 
     return carList;

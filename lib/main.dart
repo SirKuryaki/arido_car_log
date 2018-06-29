@@ -13,6 +13,8 @@ void main() => runApp(new MyApp());
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn _googleSignIn = new GoogleSignIn();
 
+FirebaseUser _user;
+
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
@@ -83,6 +85,7 @@ class _WelcomePageState extends State<WelcomePage> {
     final FirebaseUser user = await _getFirebaseUser();
     if (user == null) {
       setState(() {
+        _user = null;
         _status = "Couldn\'t login, please try again";
         _hasError = true;
       });
@@ -90,6 +93,7 @@ class _WelcomePageState extends State<WelcomePage> {
     }
 
     setState(() {
+      _user = user;
       _status = "Hi ${user.displayName}";
     });
 
@@ -147,11 +151,13 @@ class _WelcomePageState extends State<WelcomePage> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _addCar,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ),
+      floatingActionButton: _user == null
+          ? null
+          : FloatingActionButton(
+              onPressed: _addCar,
+              tooltip: 'Add Car',
+              child: Icon(Icons.add),
+            ),
     );
   }
 

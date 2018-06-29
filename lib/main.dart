@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
+
+import 'service/UserService.dart';
 import 'model/Car.dart';
-
-import 'dart:async';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'cars/CarPage.dart';
 
-void main() => runApp(new MyApp());
+import 'package:firebase_auth/firebase_auth.dart';
 
-final FirebaseAuth _auth = FirebaseAuth.instance;
-final GoogleSignIn _googleSignIn = new GoogleSignIn();
+void main() => runApp(new MyApp());
 
 FirebaseUser _user;
 
@@ -42,6 +37,8 @@ class WelcomePage extends StatefulWidget {
 }
 
 class _WelcomePageState extends State<WelcomePage> {
+  final UserService _userService = UserService.instance;
+
   String _status;
   bool _hasError = false;
 
@@ -51,38 +48,11 @@ class _WelcomePageState extends State<WelcomePage> {
     _loginUser();
   }
 
-  Future<FirebaseUser> _getFirebaseUser() async {
-    GoogleSignInAccount googleUser = await _googleSignIn.signInSilently();
-    if (googleUser == null) {
-      googleUser = await _googleSignIn.signIn();
-    }
-
-    if (googleUser == null) {
-      return null;
-    }
-
-    final GoogleSignInAuthentication googleAuth =
-        await googleUser.authentication;
-    final FirebaseUser user = await _auth.signInWithGoogle(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-    assert(user.email != null);
-    assert(user.displayName != null);
-    assert(!user.isAnonymous);
-    assert(await user.getIdToken() != null);
-
-    final FirebaseUser currentUser = await _auth.currentUser();
-    assert(user.uid == currentUser.uid);
-
-    return user;
-  }
-
   _loginUser() async {
     setState(() {
       _status = "Loading...";
     });
-    final FirebaseUser user = await _getFirebaseUser();
+    final FirebaseUser user = await _userService.getFirebaseUser();
     if (user == null) {
       setState(() {
         _user = null;
@@ -97,7 +67,7 @@ class _WelcomePageState extends State<WelcomePage> {
       _status = "Hi ${user.displayName}";
     });
 
-    List<Car> cars = await _getMyCarList(user);
+    List<Car> cars = await _userService.getMyCarList(user);
     if (cars == null) {
       setState(() {
         _status = "Error while retrieving info";
@@ -159,36 +129,5 @@ class _WelcomePageState extends State<WelcomePage> {
               child: Icon(Icons.add),
             ),
     );
-  }
-
-  Future<List<Car>> _getMyCarList(FirebaseUser user) async {
-    DocumentSnapshot doc =
-        await Firestore.instance.collection("users").document(user.uid).get();
-    if (doc == null || !doc.exists) {
-      final DocumentReference ref =
-          Firestore.instance.collection("users").document(user.uid);
-      await ref.setData({"id": user.uid});
-      doc = await ref.get();
-    }
-
-    final cars = await doc.reference.collection("cars").getDocuments();
-    if (cars.documents.isEmpty) {
-      return new List(0);
-    }
-
-    final carsArray = cars.documents;
-
-    List<Car> carList = new List();
-    for (final document in carsArray) {
-      Car car = Car();
-      car.id = document.data["id"] as String;
-      car.brand = document.data["brand"] as String;
-      car.model = document.data["model"] as String;
-      car.version = document.data["version"] as String;
-      car.year = document.data["year"] as int;
-      carList.add(car);
-    }
-
-    return carList;
   }
 }

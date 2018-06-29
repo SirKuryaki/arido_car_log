@@ -7,9 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../model/Car.dart';
 
 class UserService {
-
   static final UserService instance = UserService();
-
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
@@ -25,7 +23,7 @@ class UserService {
     }
 
     final GoogleSignInAuthentication googleAuth =
-    await googleUser.authentication;
+        await googleUser.authentication;
     final FirebaseUser user = await _auth.signInWithGoogle(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
@@ -43,32 +41,34 @@ class UserService {
 
   Future<List<Car>> getMyCarList(FirebaseUser user) async {
     DocumentSnapshot doc =
-    await Firestore.instance.collection("users").document(user.uid).get();
+        await Firestore.instance.collection('users').document(user.uid).get();
     if (doc == null || !doc.exists) {
       final DocumentReference ref =
-      Firestore.instance.collection("users").document(user.uid);
-      await ref.setData({"id": user.uid});
+          Firestore.instance.collection('users').document(user.uid);
+      await ref.setData({'id': user.uid});
       doc = await ref.get();
     }
 
-    final cars = await doc.reference.collection("cars").getDocuments();
+    final cars = await Firestore.instance.collection('cars').where("user_id", isEqualTo:user.uid).getDocuments();
     if (cars.documents.isEmpty) {
       return List(0);
     }
 
     final carsArray = cars.documents;
 
-    List<Car> carList = List();
+    final List<Car> carList = List();
     for (final document in carsArray) {
-      Car car = Car();
-      car.id = document.data["id"] as String;
-      car.brand = document.data["brand"] as String;
-      car.model = document.data["model"] as String;
-      car.version = document.data["version"] as String;
-      car.year = document.data["year"] as int;
-      carList.add(car);
+      carList.add(Car.fromMap(document.data));
     }
 
     return carList;
+  }
+
+  Future<void> saveCar(Car car) async {
+    final FirebaseUser currentUser = await _auth.currentUser();
+    Firestore.instance
+        .collection('cars')
+        .document()
+        .setData(car.toMap(currentUser.uid));
   }
 }

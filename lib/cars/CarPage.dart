@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../model/Car.dart';
+import '../service/UserService.dart';
 
 const String CAR_PAGE_ROUTE = "/car";
 
@@ -176,6 +177,8 @@ class _CarPageState extends State<CarPage> {
         _car.measureUnit != null &&
         _car.fuelType != null) {
       _formKey.currentState.save();
+
+      UserService.instance.saveCar(_car);
     }
   }
 

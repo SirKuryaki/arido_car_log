@@ -7,10 +7,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../model/Car.dart';
 
 class UserService {
-  static final UserService instance = UserService();
+  static final UserService instance =
+      UserService(Firestore.instance, FirebaseAuth.instance, GoogleSignIn());
 
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final Firestore _firestore;
+  final FirebaseAuth _auth;
+  final GoogleSignIn _googleSignIn;
+
+  UserService(this._firestore, this._auth, this._googleSignIn);
 
   Future<FirebaseUser> getFirebaseUser() async {
     GoogleSignInAccount googleUser = await _googleSignIn.signInSilently();
@@ -39,17 +43,22 @@ class UserService {
     return user;
   }
 
-  Future<List<Car>> getMyCarList(FirebaseUser user) async {
+  Future<List<Car>> getMyCarList() async {
+    final FirebaseUser currentUser = await _auth.currentUser();
+    String userId = currentUser.uid;
     DocumentSnapshot doc =
-        await Firestore.instance.collection('users').document(user.uid).get();
+        await _firestore.collection('users').document(userId).get();
     if (doc == null || !doc.exists) {
       final DocumentReference ref =
-          Firestore.instance.collection('users').document(user.uid);
-      await ref.setData({'id': user.uid});
+          _firestore.collection('users').document(userId);
+      await ref.setData({'id': userId});
       doc = await ref.get();
     }
 
-    final cars = await Firestore.instance.collection('cars').where("user_id", isEqualTo:user.uid).getDocuments();
+    final cars = await _firestore
+        .collection('cars')
+        .where("user_id", isEqualTo: userId)
+        .getDocuments();
     if (cars.documents.isEmpty) {
       return List(0);
     }
@@ -66,7 +75,7 @@ class UserService {
 
   Future<void> saveCar(Car car) async {
     final FirebaseUser currentUser = await _auth.currentUser();
-    Firestore.instance
+    _firestore
         .collection('cars')
         .document()
         .setData(car.toMap(currentUser.uid));

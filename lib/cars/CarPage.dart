@@ -10,13 +10,10 @@ class CarPage extends StatefulWidget {
 }
 
 class _CarPageState extends State<CarPage> {
-
-  Car _car = Car();
-
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  String _errorTextFuelType;
-  String _errorTextMeasureUnit;
+  bool _showErrors = false;
+  Car _car = Car();
 
   @override
   Widget build(BuildContext context) {
@@ -88,13 +85,15 @@ class _CarPageState extends State<CarPage> {
                 ),
                 InputDecorator(
                   decoration: InputDecoration(
-                      labelText: 'Fuel type', errorText: _errorTextFuelType),
+                      labelText: 'Fuel type',
+                      errorText: _showErrors && _car.fuelType == null
+                          ? 'Required'
+                          : null),
                   isEmpty: _car.fuelType == null,
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
                       onChanged: (String value) {
                         setState(() {
-                          _errorTextFuelType = null;
                           _car.fuelType = value;
                         });
                       },
@@ -121,14 +120,15 @@ class _CarPageState extends State<CarPage> {
                 InputDecorator(
                   decoration: InputDecoration(
                       labelText: 'Odometer in',
-                      errorText: _errorTextMeasureUnit),
+                      errorText: _showErrors && _car.measureUnit == null
+                          ? 'Required'
+                          : null),
                   isEmpty: _car.measureUnit == null,
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
                       onChanged: (String value) {
                         setState(() {
                           _car.measureUnit = value;
-                          _errorTextMeasureUnit = null;
                         });
                       },
                       value: _car.measureUnit,
@@ -168,17 +168,14 @@ class _CarPageState extends State<CarPage> {
   }
 
   void _addNewCar() {
-    setState(() {
-      _errorTextMeasureUnit = _car.measureUnit == null ? 'Required' : null;
-      _errorTextFuelType = _car.fuelType == null ? 'Required' : null;
-    });
-
     if (_formKey.currentState.validate() &&
         _car.measureUnit != null &&
         _car.fuelType != null) {
       _formKey.currentState.save();
 
       UserService.instance.saveCar(_car);
+    } else {
+      _showErrors == true;
     }
   }
 

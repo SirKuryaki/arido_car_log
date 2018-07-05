@@ -178,6 +178,4 @@ class _CarPageState extends State<CarPage> {
       _showErrors == true;
     }
   }
-
-  void popupButtonSelected(String v) {}
 }

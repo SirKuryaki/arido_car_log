@@ -76,14 +76,15 @@ class UserService {
 
   Future<void> saveCar(Car car) async {
     final FirebaseUser currentUser = await _auth.currentUser();
-    _firestore
-        .collection('cars')
-        .document()
-        .setData(car.toMap(currentUser.uid));
+    DocumentReference ref = _firestore.collection('cars').document();
+    car.userId = currentUser.uid;
+    car.id = ref.documentID;
+    ref.setData(car.toMap());
   }
 
   Future<void> addFillUp(Fill fill) async {
-    //todo: method stub
-    // _firestore.collection('fills').document().setData(fill.toMap());
+    DocumentReference ref = _firestore.collection('fills').document();
+    fill.id = ref.documentID;
+    ref.setData(fill.toMap());
   }
 }

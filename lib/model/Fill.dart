@@ -1,4 +1,5 @@
 class Fill {
+  String id;
   String carId;
   DateTime date;
   int kilometers;
@@ -12,6 +13,7 @@ class Fill {
   }
 
   Fill.fromMap(Map<String, dynamic> map) {
+    id = map['id'];
     carId = map['carId'];
     date = map['date'];
     kilometers = map['kilometers'];
@@ -22,6 +24,7 @@ class Fill {
 
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
       'car_id': carId,
       'date': date,
       'kilometers': kilometers,

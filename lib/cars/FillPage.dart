@@ -213,8 +213,9 @@ class _FillPageState extends State<FillPage> {
   }
 
   void _submitFill() {
-    print(_fill.toMap())                                ;
-    if (_formKey.currentState.validate() && _fill.carId != null) {
+    if (_formKey.currentState.validate() && _car != null) {
+      _fill.carId = _car.id;
+      _formKey.currentState.save();
       UserService.instance.addFillUp(_fill);
     } else {
       setState(() {

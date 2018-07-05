@@ -5,6 +5,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../model/Car.dart';
+import '../model/Fill.dart';
 
 class UserService {
   static final UserService instance =
@@ -79,5 +80,10 @@ class UserService {
         .collection('cars')
         .document()
         .setData(car.toMap(currentUser.uid));
+  }
+
+  Future<void> addFillUp(Fill fill) async {
+    //todo: method stub
+    // _firestore.collection('fills').document().setData(fill.toMap());
   }
 }

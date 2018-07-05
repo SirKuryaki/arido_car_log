@@ -175,7 +175,9 @@ class _CarPageState extends State<CarPage> {
 
       UserService.instance.saveCar(_car);
     } else {
-      _showErrors == true;
+      setState(() {
+        _showErrors = true;
+      });
     }
   }
 }

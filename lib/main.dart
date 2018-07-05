@@ -67,7 +67,7 @@ class _WelcomePageState extends State<WelcomePage> {
       _status = "Hi ${user.displayName}";
     });
 
-    List<Car> cars = await _userService.getMyCarList(user);
+    List<Car> cars = await _userService.getMyCarList();
     if (cars == null) {
       setState(() {
         _status = "Error while retrieving info";

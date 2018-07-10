@@ -28,6 +28,12 @@ class _FillPageState extends State<FillPage> {
     _loadCars();
   }
 
+  @override
+  void dispose() {
+    _odometerController.dispose();
+    super.dispose();
+  }
+
   Future<void> _selectDate(BuildContext context) async {
     DateTime date = await showDatePicker(
         context: context,

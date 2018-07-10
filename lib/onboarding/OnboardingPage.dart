@@ -4,6 +4,8 @@ import 'package:circle_indicator/circle_indicator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../service/UserService.dart';
 
+const String ONBOARDING_PAGE_ROUTE = "/onboarding";
+
 class OnboardingPage extends StatefulWidget {
   @override
   _OnboardingPageState createState() => _OnboardingPageState();

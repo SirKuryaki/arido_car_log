@@ -13,6 +13,8 @@ dependencies:
   firebase_auth: 0.5.11
   cloud_firestore: 0.7.3
 
+  circle_indicator: ^0.0.7
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -29,6 +31,8 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  assets:
+    - res/bkg_onboarding.webp
   # To add assets to your application, add an assets section, like this:
   # assets:
   #  - images/a_dot_burr.jpeg

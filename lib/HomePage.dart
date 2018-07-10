@@ -1,12 +1,30 @@
 import 'package:flutter/material.dart';
 
+import 'service/UserService.dart';
+import 'onboarding/OnboardingPage.dart';
+
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
+  final UserService _userService = UserService.instance;
+
   int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkUserLogged();
+  }
+
+  void _checkUserLogged() async {
+    bool isLogged = await _userService.isLogged();
+    if (!isLogged) {
+      Navigator.of(context).pushReplacementNamed(ONBOARDING_PAGE_ROUTE);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

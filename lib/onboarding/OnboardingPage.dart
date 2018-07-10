@@ -123,7 +123,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 title: Text('Error'),
                 content: Text('Couldn\'t login, please try again'),
               ));
+    } else {
+      Navigator.of(context).pushReplacementNamed('/');
     }
-    //todo: go to home page
   }
 }

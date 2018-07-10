@@ -44,6 +44,11 @@ class UserService {
     return user;
   }
 
+  Future<bool> isLogged() async {
+    FirebaseUser user = await getFirebaseUser();
+    return user != null;
+  }
+
   Future<List<Car>> getMyCarList() async {
     final FirebaseUser currentUser = await _auth.currentUser();
     String userId = currentUser.uid;

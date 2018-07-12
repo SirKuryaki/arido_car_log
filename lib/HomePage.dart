@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'service/UserService.dart';
 import 'onboarding/OnboardingPage.dart';
+import 'cars/FillsPage.dart';
+import 'cars/MaintenancesPage.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -10,6 +12,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final UserService _userService = UserService.instance;
+  final PageController _controller = PageController();
 
   int _currentIndex = 0;
 
@@ -17,6 +20,12 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _checkUserLogged();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
   }
 
   void _checkUserLogged() async {
@@ -28,36 +37,44 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    List<BottomNavigationBarItem> items = <BottomNavigationBarItem>[
+    List<BottomNavigationBarItem> items = [
       BottomNavigationBarItem(
         icon: Image.asset('res/ic_fills.png', width: 36.0),
         activeIcon: Image.asset('res/ic_fills_active.png', width: 36.0),
         title: Text(
           'Fills',
-          style: TextStyle(color: Colors.red),
+          style: const TextStyle(color: Colors.red),
         ),
       ),
       BottomNavigationBarItem(
         icon: Image.asset('res/ic_maintenance.png', width: 36.0),
         activeIcon: Image.asset('res/ic_maintenance_active.png', width: 36.0),
-        title: Text(
+        title: const Text(
           'Maintenances',
-          style: TextStyle(color: Colors.red),
+          style: const TextStyle(color: Colors.red),
         ),
       )
     ];
     return Scaffold(
       appBar: AppBar(
-        title: Text('Arido Car Log'),
+        title: const Text('Arido Car Log'),
+      ),
+      body: PageView(
+        children: [FillsPage(), MaintenancesPage()],
+        controller: _controller,
+        onPageChanged: (int index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.shifting,
         items: items,
         currentIndex: _currentIndex,
         onTap: (int index) {
-          setState(() {
-            _currentIndex = index;
-          });
+          _controller.animateToPage(index,
+              duration: const Duration(milliseconds: 500), curve: Curves.ease);
         },
       ),
     );

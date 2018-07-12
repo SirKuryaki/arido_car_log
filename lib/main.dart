@@ -4,21 +4,21 @@ import 'cars/CarPage.dart';
 import 'HomePage.dart';
 import 'onboarding/OnboardingPage.dart';
 
-void main() => runApp(new MyApp());
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
       title: 'Arido\'s Car log',
-      theme: new ThemeData(
+      theme: ThemeData(
         primarySwatch: Colors.red,
       ),
-      home: HomePage(),//(title: 'Car log'),
-      routes: <String, WidgetBuilder>{
+      home: HomePage(),
+      routes: {
         ONBOARDING_PAGE_ROUTE: (BuildContext context) => OnboardingPage(),
-        CAR_PAGE_ROUTE: (BuildContext context) => HomePage(),
+        CAR_PAGE_ROUTE: (BuildContext context) => CarPage(),
       },
     );
   }

@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:package_info/package_info.dart';
 
 import '../model/Car.dart';
 import '../model/Fill.dart';
@@ -33,13 +35,22 @@ class UserService {
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
-    assert(user.email != null);
-    assert(user.displayName != null);
-    assert(!user.isAnonymous);
-    assert(await user.getIdToken() != null);
 
     final FirebaseUser currentUser = await _auth.currentUser();
-    assert(user.uid == currentUser.uid);
+
+    DocumentSnapshot doc =
+        await _firestore.collection('users').document(currentUser.uid).get();
+    if (doc == null || !doc.exists) {
+      PackageInfo packageInfo = await PackageInfo.fromPlatform();
+
+      final DocumentReference ref =
+          _firestore.collection('users').document(currentUser.uid);
+      await ref.setData({
+        'id': currentUser.uid,
+        'app_version': packageInfo.version,
+        'platform': Platform.operatingSystem
+      });
+    }
 
     return user;
   }
@@ -52,14 +63,6 @@ class UserService {
   Future<List<Car>> getMyCarList() async {
     final FirebaseUser currentUser = await _auth.currentUser();
     String userId = currentUser.uid;
-    DocumentSnapshot doc =
-        await _firestore.collection('users').document(userId).get();
-    if (doc == null || !doc.exists) {
-      final DocumentReference ref =
-          _firestore.collection('users').document(userId);
-      await ref.setData({'id': userId});
-      doc = await ref.get();
-    }
 
     final cars = await _firestore
         .collection('cars')

@@ -9,6 +9,10 @@ import 'package:package_info/package_info.dart';
 import '../model/Car.dart';
 import '../model/Fill.dart';
 
+const String USERS = 'users';
+const String CARS = 'cars';
+const String FILLS = 'fills';
+
 class UserService {
   static final UserService instance =
       UserService(Firestore.instance, FirebaseAuth.instance, GoogleSignIn());
@@ -39,12 +43,12 @@ class UserService {
     final FirebaseUser currentUser = await _auth.currentUser();
 
     DocumentSnapshot doc =
-        await _firestore.collection('users').document(currentUser.uid).get();
+        await _firestore.collection(USERS).document(currentUser.uid).get();
     if (doc == null || !doc.exists) {
       PackageInfo packageInfo = await PackageInfo.fromPlatform();
 
       final DocumentReference ref =
-          _firestore.collection('users').document(currentUser.uid);
+          _firestore.collection(USERS).document(currentUser.uid);
       await ref.setData({
         'id': currentUser.uid,
         'app_version': packageInfo.version,
@@ -65,7 +69,7 @@ class UserService {
     String userId = currentUser.uid;
 
     final cars = await _firestore
-        .collection('cars')
+        .collection(CARS)
         .where("user_id", isEqualTo: userId)
         .getDocuments();
     if (cars.documents.isEmpty) {
@@ -84,14 +88,14 @@ class UserService {
 
   Future<void> saveCar(Car car) async {
     final FirebaseUser currentUser = await _auth.currentUser();
-    DocumentReference ref = _firestore.collection('cars').document();
+    DocumentReference ref = _firestore.collection(CARS).document();
     car.userId = currentUser.uid;
     car.id = ref.documentID;
     ref.setData(car.toMap());
   }
 
   Future<void> addFillUp(Fill fill) async {
-    DocumentReference ref = _firestore.collection('fills').document();
+    DocumentReference ref = _firestore.collection(FILLS).document();
     fill.id = ref.documentID;
     ref.setData(fill.toMap());
   }
